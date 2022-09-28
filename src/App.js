@@ -1,21 +1,27 @@
 import axios from "axios";
-import { useEffect, useState } from "react";
+import { useEffect, useReducer } from "react";
 import Footer from "./components/Footer";
 import Form from "./components/Form";
 import Header from "./components/Header";
 import Main from "./components/Main";
+import reducer from "./reducer";
+
+const initialState = {
+  loading: false,
+  error: false,
+  info: {},
+  city: "London",
+  userInput: "",
+};
 
 const App = () => {
-  const [city, setCity] = useState("London");
-  const [userInput, setUserInput] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(false);
-  const [info, setInfo] = useState({});
-  const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&appid=0`;
+  const [state, dispatch] = useReducer(reducer, initialState);
+
+  const url = `https://api.openweathermap.org/data/2.5/weather?q=${state.city}&units=metric&appid=0e4969833248eae95ad1adefa79c63b3`;
 
   const fetchData = async (url) => {
     try {
-      setLoading(true);
+      dispatch({ type: "SET_LOADING" });
       const { data } = await axios.get(url);
       const {
         main: { humidity, pressure, temp, temp_max, temp_min, feels_like },
@@ -24,31 +30,32 @@ const App = () => {
         wind,
         weather,
       } = data;
-      setLoading(false);
-      setInfo({
-        humidity,
-        pressure,
-        temp,
-        temp_max,
-        temp_min,
-        feels_like,
-        name,
-        country,
-        wind,
-        weather,
+      dispatch({
+        type: "DATA_SUCCESS",
+        payload: {
+          humidity,
+          pressure,
+          temp,
+          temp_max,
+          temp_min,
+          feels_like,
+          name,
+          country,
+          wind,
+          weather,
+        },
       });
     } catch (error) {
-      setError(true);
-      setLoading(false);
+      dispatch({ type: "ERROR" });
     }
   };
 
   const handleChange = (e) => {
-    setUserInput(e.target.value);
+    dispatch({ type: "UPDATE_USERINPUT", payload: e.target.value });
   };
   const handleSubmit = (e) => {
     e.preventDefault();
-    setCity(userInput);
+    dispatch({ type: "SUBMIT" });
     fetchData(url);
   };
   useEffect(() => {
@@ -60,9 +67,9 @@ const App = () => {
       <Form
         handleChange={handleChange}
         handleSubmit={handleSubmit}
-        city={userInput}
+        city={state.userInput}
       />
-      <Main info={info} loading={loading} error={error} />
+      <Main info={state.info} loading={state.loading} error={state.error} />
       <Footer />
     </div>
   );
