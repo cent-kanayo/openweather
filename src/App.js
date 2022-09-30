@@ -1,77 +1,78 @@
 import axios from "axios";
 import { useEffect, useReducer } from "react";
+import {
+  ADD_TO_CART,
+  REMOVE_ITEM,
+  SET_ERROR,
+  SET_LOADING,
+  SET_SUCCESS,
+  UPDATE_CART,
+} from "./actions";
+import Cart from "./components/Cart";
 import Footer from "./components/Footer";
-import Form from "./components/Form";
 import Header from "./components/Header";
-import Main from "./components/Main";
+import Products from "./components/Products";
 import reducer from "./reducer";
 
 const initialState = {
   loading: false,
   error: false,
-  info: {},
-  city: "London",
-  userInput: "",
+  products: [],
+  cart: [],
 };
 
 const App = () => {
   const [state, dispatch] = useReducer(reducer, initialState);
-
-  const url = `https://api.openweathermap.org/data/2.5/weather?q=${state.city}&units=metric&appid=0e4969833248eae95ad1adefa79c63b3`;
-
-  const fetchData = async (url) => {
+  const url = "https://fakestoreapi.com/products";
+  const fetchProducts = async () => {
     try {
-      dispatch({ type: "SET_LOADING" });
-      const { data } = await axios.get(url);
-      const {
-        main: { humidity, pressure, temp, temp_max, temp_min, feels_like },
-        name,
-        sys: { country },
-        wind,
-        weather,
-      } = data;
-      dispatch({
-        type: "DATA_SUCCESS",
-        payload: {
-          humidity,
-          pressure,
-          temp,
-          temp_max,
-          temp_min,
-          feels_like,
-          name,
-          country,
-          wind,
-          weather,
-        },
-      });
+      dispatch({ type: SET_LOADING });
+      const { data } = await axios(url);
+      dispatch({ type: SET_SUCCESS, payload: data });
     } catch (error) {
-      dispatch({ type: "ERROR" });
+      dispatch({ type: SET_ERROR });
     }
   };
 
-  const handleChange = (e) => {
-    dispatch({ type: "UPDATE_USERINPUT", payload: e.target.value });
+  const addToCart = (cartItem) => {
+    const isItemInCart = state.cart.find((item) => item.id === cartItem.id);
+    if (isItemInCart) {
+      dispatch({ type: UPDATE_CART, payload: cartItem });
+    } else {
+      dispatch({ type: ADD_TO_CART, payload: cartItem });
+    }
   };
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    dispatch({ type: "SUBMIT" });
-    fetchData(url);
+
+  const removeFromCart = (id) => {
+    dispatch({ type: REMOVE_ITEM, payload: id });
   };
+
   useEffect(() => {
-    fetchData(url);
-  }, [url]);
+    fetchProducts();
+  }, []);
+  console.log(state.cart);
   return (
-    <div className="">
+    <>
       <Header />
-      <Form
-        handleChange={handleChange}
-        handleSubmit={handleSubmit}
-        city={state.userInput}
-      />
-      <Main info={state.info} loading={state.loading} error={state.error} />
+      <div className="flex container mx-auto">
+        <div className="w-1/9">
+          <Products
+            products={state.products}
+            loading={state.loading}
+            error={state.error}
+            addToCart={addToCart}
+          />
+        </div>
+        <div>
+          <Cart
+            cart={state.cart}
+            addToCart={addToCart}
+            removeFromCart={removeFromCart}
+          />
+        </div>
+      </div>
       <Footer />
-    </div>
+    </>
   );
 };
 
