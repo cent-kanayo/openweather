@@ -19,6 +19,7 @@ const reducer = (state, action) => {
         ...state,
         loading: false,
         products: action.payload,
+        filterProducts: action.payload,
       };
     case SET_ERROR:
       return {
@@ -56,14 +57,14 @@ const reducer = (state, action) => {
           .filter((item) => item.amount !== 0),
       };
     case "FILTER":
-      let tempProducts = state.products.slice();
+      let tempProducts = Array.from(state.products);
       let newProducts = tempProducts.filter(
         (item) => item.category === action.payload
       );
 
       return {
         ...state,
-        products: newProducts,
+        filterProducts: newProducts,
       };
     default:
       return state;

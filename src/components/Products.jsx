@@ -3,8 +3,13 @@ import { useGlobalContext } from "../context";
 // import SingleProducts from "./SingleProducts";
 
 const Products = () => {
-  const { products, loading, error, filterByCategory, addToCart } =
-    useGlobalContext();
+  const {
+    filterProducts: products,
+    loading,
+    error,
+    filterByCategory,
+    addToCart,
+  } = useGlobalContext();
   if (loading) return <div className="loading"></div>;
   if (error)
     return <h1 className="text-3xl font-bold">Oops! Something went wrong.</h1>;

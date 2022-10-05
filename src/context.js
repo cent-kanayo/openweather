@@ -17,6 +17,7 @@ const initialState = {
   loading: false,
   error: false,
   products: [],
+  filterProducts: [],
   cart: [],
 };
 const AppProvider = ({ children }) => {
