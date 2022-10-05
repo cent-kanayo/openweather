@@ -1,14 +1,8 @@
 import React from "react";
+import { useGlobalContext } from "../context";
 
-const SingleProducts = ({
-  id,
-  image,
-  category,
-  title,
-  description,
-  price,
-  addToCart,
-}) => {
+const SingleProducts = ({ id, image, category, title, description, price }) => {
+  const { addToCart } = useGlobalContext();
   return (
     <article className="bg-slate-900 text-white w-80 p-2 mb-6">
       <img src={image} alt="" className="image mb-4" />

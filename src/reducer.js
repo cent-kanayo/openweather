@@ -55,6 +55,16 @@ const reducer = (state, action) => {
           )
           .filter((item) => item.amount !== 0),
       };
+    case "FILTER":
+      let tempProducts = state.products.slice();
+      let newProducts = tempProducts.filter(
+        (item) => item.category === action.payload
+      );
+
+      return {
+        ...state,
+        products: newProducts,
+      };
     default:
       return state;
   }
