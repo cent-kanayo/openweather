@@ -19,6 +19,7 @@ const Products = () => {
       <div>
         <h3>Category</h3>
         <div className="mb-4 bg-orange-300 flex gap-10 p-2">
+          <button onClick={() => filterByCategory("all")}>All</button>
           <button onClick={() => filterByCategory("men's clothing")}>
             Men's Clothing
           </button>
