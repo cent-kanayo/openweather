@@ -1,6 +1,7 @@
-import React from "react";
+import React, { useRef } from "react";
 import { useGlobalContext } from "../context";
-// import SingleProducts from "./SingleProducts";
+
+import SingleProducts from "./SingleProducts";
 
 const Products = () => {
   const {
@@ -8,15 +9,35 @@ const Products = () => {
     loading,
     error,
     filterByCategory,
-    addToCart,
+    handleSearch,
   } = useGlobalContext();
+  const userInput = useRef();
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (!userInput.current.value) return;
+    handleSearch(userInput.current.value);
+  };
+
   if (loading) return <div className="loading"></div>;
   if (error)
     return <h1 className="text-3xl font-bold">Oops! Something went wrong.</h1>;
 
+  if (products.length < 1) return <h1>No products found</h1>;
   return (
     <>
       <div>
+        <div className="border border-gray-300 w-96 px-3 py-2">
+          <form className="flex space-x-5" onSubmit={handleSubmit}>
+            <input
+              type="text"
+              ref={userInput}
+              placeholder="Search"
+              className="hover:outline-none ring-orange-500 hover:ring px-2 rounded-md"
+            />
+            <input type="submit" />
+          </form>
+        </div>
         <h3>Category</h3>
         <div className="mb-4 bg-orange-300 flex gap-10 p-2">
           <button onClick={() => filterByCategory("all")}>All</button>
@@ -35,28 +56,8 @@ const Products = () => {
         </div>
       </div>
       <div className="flex gap-4 flex-wrap container mx-auto">
-        {products.map((product) => {
-          // return <SingleProducts key={product.id} {...product} />;
-          const { image, title, description, price, category } = product;
-          return (
-            <article className="bg-slate-900 text-white w-80 p-2 mb-6">
-              <img src={image} alt="" className="image mb-4" />
-              <div>
-                <div>
-                  <h3 className="text-lg font-bold mb-4">{title}</h3>
-                </div>
-                <h5 className="text-lg">{category}</h5>
-                <p className="mb-4">{description.slice(0, 100)}...</p>
-                <p>${price}</p>
-              </div>
-              <button
-                onClick={() => addToCart(product)}
-                className="bg-orange-600 p-2 text-center rounded-md mt-4"
-              >
-                Add To Cart
-              </button>
-            </article>
-          );
+        {products?.map((product) => {
+          return <SingleProducts key={product?.id} item={product} />;
         })}
       </div>
     </>

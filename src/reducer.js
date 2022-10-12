@@ -1,6 +1,7 @@
 import {
   ADD_TO_CART,
   REMOVE_ITEM,
+  SEARCH_FILTER,
   SET_ERROR,
   SET_LOADING,
   SET_SUCCESS,
@@ -71,6 +72,21 @@ const reducer = (state, action) => {
       return {
         ...state,
         filterProducts: newProducts,
+      };
+    case SEARCH_FILTER:
+      let tempProduct = [...state.products];
+      const search = tempProduct.filter((item) => {
+        const items = item.title.toLowerCase();
+        console.log(items);
+        if (items.includes(action.payload.toLowerCase())) {
+          return item;
+        }
+        return null;
+      });
+
+      return {
+        ...state,
+        filterProducts: search,
       };
     default:
       return state;

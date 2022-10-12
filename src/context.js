@@ -1,9 +1,10 @@
-import React, { createContext, useContext } from "react";
+import React, { useContext } from "react";
 import axios from "axios";
 import { useEffect, useReducer } from "react";
 import {
   ADD_TO_CART,
   REMOVE_ITEM,
+  SEARCH_FILTER,
   SET_ERROR,
   SET_LOADING,
   SET_SUCCESS,
@@ -11,7 +12,7 @@ import {
 } from "./actions";
 import reducer from "./reducer";
 
-const AppContent = createContext();
+const AppContent = React.createContext();
 
 const initialState = {
   loading: false,
@@ -65,6 +66,11 @@ const AppProvider = ({ children }) => {
   };
 
   const { totalAmount, totalPrice } = total();
+
+  const handleSearch = (searchValue) => {
+    dispatch({ type: SEARCH_FILTER, payload: searchValue });
+  };
+
   useEffect(() => {
     fetchProducts();
   }, []);
@@ -78,6 +84,7 @@ const AppProvider = ({ children }) => {
         totalAmount,
         totalPrice,
         filterByCategory,
+        handleSearch,
       }}
     >
       {children}
@@ -86,7 +93,8 @@ const AppProvider = ({ children }) => {
 };
 
 export const useGlobalContext = () => {
-  return useContext(AppContent);
+  const data = useContext(AppContent);
+  return data;
 };
 
 export default AppProvider;
